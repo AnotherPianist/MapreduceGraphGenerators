@@ -44,7 +44,7 @@ hadoop jar h4ug.jar -n <n> -m <w>
 
 ## Wiki 📖
 
-You can find much more about how to use this project on our [Wiki](https://github.com/FerLopezGallegos/Graph-generation-with-map-reduce-experiments/wiki)
+You can find much more about how to use this project on our [Wiki](https://github.com/FerLopezGallegos/MapreduceGraphGenerators/wiki)
 
 ---
 ⌨️ Plantilla de: [Villanuevand](https://github.com/Villanuevand) 😊
