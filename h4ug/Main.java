@@ -1,4 +1,3 @@
-
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -6,6 +5,7 @@ import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Random;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
@@ -18,26 +18,17 @@ import org.apache.hadoop.util.Progressable;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 /**
- *
  * @author fernandalopezgallegos
  */
 public class Main extends Configured implements Tool {
-
     //static private final String TMP_DIR_PREFIX = Main.class.getSimpleName();
     public static void main(String[] args) throws Exception {
         System.exit(ToolRunner.run(null, new Main(), args));
-
     }
 
     @Override
     public int run(String[] args) throws Exception {
-
         long n = 1000;
         int m = 1; //numero de maps
         int l = 0;
@@ -67,29 +58,24 @@ public class Main extends Configured implements Tool {
             } catch (Exception ex) {
                 System.out.println("Error: Invalid parameters");
                 return 0;
-
             }
         }
         System.out.println("=== Parameters ===");
         System.out.println("-n = " + n);
         System.out.println("-m = " + m);
         System.out.println("-l = " + l);
-        
-        System.out.println("=== Begin ==="); 
-        
+        System.out.println("=== Begin ===");
 
         final long N = n;
         final long E = (long) ((2.0 / 3.0) * N * Math.log(N) + (0.38481 * N));
         final int nMaps = m;
-        
+
         final Path tmpDir;
 
-        if(l == 0){
-            tmpDir = new Path(getConf().get("fs.defaultFS") + "/hrmat");        
-        }
-        else{
-            tmpDir = new Path("d1_"+N); //local
-            
+        if (l == 0) {
+            tmpDir = new Path(getConf().get("fs.defaultFS") + "/hrmat");
+        } else {
+            tmpDir = new Path("d1_" + N); //local
         }
 
         System.out.println("Number of nodes  = " + N);
@@ -103,7 +89,6 @@ public class Main extends Configured implements Tool {
     }
 
     private void generateGraph(long N, long E, int nMaps, Path tmpDir, Configuration conf) throws IOException, InterruptedException, ClassNotFoundException, URISyntaxException {
-
         /*
         Job 1
          */
@@ -121,7 +106,7 @@ public class Main extends Configured implements Tool {
         job.setJarByClass(Main.class);
 
         job.setMapperClass(UndirectedGraphMapper.class);
-        
+
         //job.setCombinerClass(UndirectedGraphCombiner.class);
 
         job.setReducerClass(UndirectedGraphReducer.class);
@@ -138,7 +123,7 @@ public class Main extends Configured implements Tool {
         FileInputFormat.setInputPaths(job, inDir);
         FileOutputFormat.setOutputPath(job, outDir);
 
-        URI uri = new URI(conf.get("fs.defaultFS"));  
+        URI uri = new URI(conf.get("fs.defaultFS"));
         final FileSystem fs = FileSystem.get(uri, conf);
 
         if (fs.exists(tmpDir)) {
@@ -152,7 +137,6 @@ public class Main extends Configured implements Tool {
         try {
             //generate an input file for each map task
             for (int i = 0; i < nMaps; ++i) {
-
                 long nEdges;
                 if (i == 0) {
                     nEdges = E / nMaps + E % nMaps;
@@ -170,7 +154,7 @@ public class Main extends Configured implements Tool {
                     if (!fs.exists(file)) {
                         fs.delete(file, true);
                     }
-                    
+
                     OutputStream os = fs.create(file, new Progressable() {
                         @Override
                         public void progress() {
@@ -188,7 +172,6 @@ public class Main extends Configured implements Tool {
                 ///
                 System.out.println("Wrote input for Map #" + i);
             }
-            
 
             //start a map/reduce job
             System.out.println("Starting Job ...");
@@ -196,11 +179,9 @@ public class Main extends Configured implements Tool {
             job.waitForCompletion(true);
             final double duration = (System.currentTimeMillis() - startTime) / 1000.0;
             System.out.println("Job Finished in " + duration + " seconds");
-
         } finally {
             //fs.delete(tmpDir, true);
             fs.close();
         }
-
     }
 }

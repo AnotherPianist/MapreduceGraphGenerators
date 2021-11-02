@@ -1,26 +1,16 @@
-
 import java.io.IOException;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 /**
- *
  * @author fernandalopezgallegos
  */
 public class UndirectedGraphReducer extends Reducer<LongWritable, LongWritable, LongWritable, LongWritable> {
-
     @Override
-    public void reduce(LongWritable key, Iterable<LongWritable> values,
-            Context context
-    ) throws IOException, InterruptedException {
-
+    public void reduce(LongWritable key, Iterable<LongWritable> values, Context context) throws IOException, InterruptedException {
         Configuration conf = context.getConfiguration();
         String strProp = conf.get("n.nodes");
         long N = Long.parseLong(strProp);
@@ -33,7 +23,6 @@ public class UndirectedGraphReducer extends Reducer<LongWritable, LongWritable, 
         }
 
         writeEdgeAlwaysGoingForward(degree, source, N, context);
-
     }
 
     private void writeEdgeAlwaysGoingForward(long degree, Long source, long N, Context context) throws IOException, InterruptedException {
@@ -46,16 +35,15 @@ public class UndirectedGraphReducer extends Reducer<LongWritable, LongWritable, 
             context.write(nkey, nvalue);
             i++;
             target++;
-
         }
-        
-        target = 0; 
-        while (i < degree) {     
+
+        target = 0;
+        while (i < degree) {
             LongWritable nkey = new LongWritable(source);
             LongWritable nvalue = new LongWritable(target);
             context.write(nkey, nvalue);
             i++;
-            target++;   
+            target++;
         }
     }
 }
